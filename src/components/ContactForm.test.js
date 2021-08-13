@@ -12,7 +12,7 @@ test('renders the contact form header', ()=> {
     render(<ContactForm />);
     const formHeader = screen.getByText(/Contact Form/)
     expect(formHeader).toBeInTheDocument();
-    expect(formHeader);
+    expect(formHeader).toBeTruthy();
 });
 
 test('renders ONE error message if user enters less then 5 characters into firstname.', async () => {
@@ -69,6 +69,26 @@ test('renders "lastName is a required field" if an last name is not entered and 
 
 test('renders all firstName, lastName and email text when submitted. Does NOT render message if message is not submitted.', async () => {
     render(<ContactForm />);
+    const fNameInput = screen.getByLabelText(/first name/i);
+    const lNameInput = screen.getByLabelText(/last name/i);
+    const emailInput = screen.getByLabelText(/email/i);
+    const submitButton = screen.getByRole('button', { type: /submit/i });
+
+    userEvent.type(fNameInput, "Joshua");
+    userEvent.type(lNameInput, "Larson");
+    userEvent.type(emailInput, "test@test.test")
+    userEvent.click(submitButton);
+
+    const submittedFName = screen.getByTestId(/firstnameDisplay/);
+    const submittedLName = screen.getByTestId(/lastnameDisplay/);
+    const submittedEmail = screen.getByTestId(/emailDisplay/);
+    let submittedMessage = screen.queryByTestId(/messageDisplay/)
+    
+    expect(submittedFName).toBeInTheDocument();
+    expect(submittedLName).toBeInTheDocument();
+    expect(submittedEmail).toBeInTheDocument();
+    expect(submittedMessage).not.toBeInTheDocument();
+    
 });
 
 test('renders all fields text when all fields are submitted.', async () => {
